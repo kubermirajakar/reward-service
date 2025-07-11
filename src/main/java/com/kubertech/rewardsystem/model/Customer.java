@@ -1,5 +1,6 @@
 package com.kubertech.rewardsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -21,5 +22,7 @@ public class Customer {
     private String name;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @JsonManagedReference
     private List<Transaction> transactions;
 }

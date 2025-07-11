@@ -9,6 +9,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class RewardSummary {
     private String customerId;
     private String customerName;

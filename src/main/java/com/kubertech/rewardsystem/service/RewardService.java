@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -109,9 +110,13 @@ public class RewardService {
      * @return a {@link RewardSummary} with calculated points
      */
     private RewardSummary buildRewardSummary(Customer customer, List<Transaction> transactions) {
+
+        List<Transaction> immutableTransactions = new ArrayList<>(transactions);
+        immutableTransactions.sort(Comparator.comparing(Transaction::getTransactionDate));  // ⬅ Sort transactions by date
+
         Map<String, Integer> monthlyPoints = new HashMap<>();
 
-        for (Transaction tx : transactions) {
+        for (Transaction tx : immutableTransactions) {
             String monthKey = tx.getTransactionDate().format(DateTimeFormatter.ofPattern("yyyy-MM"));
             int earnedPoints = RewardPointsUtil.calculateRewardPoints(tx.getAmount());
             monthlyPoints.merge(monthKey, earnedPoints, Integer::sum);
@@ -122,8 +127,11 @@ public class RewardService {
                     YearMonth yearMonth = YearMonth.parse(entry.getKey());
                     String monthName = yearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
                     return new MonthlyPointDTO(yearMonth.getYear(), monthName, entry.getValue());
-                })
+                }).
+                sorted(Comparator.comparing(MonthlyPointDTO::getYear)
+                .thenComparing(mp -> Month.valueOf(mp.getMonth().toUpperCase())))
                 .toList();
+
 
         int totalPoints = monthlyPoints.values().stream().mapToInt(Integer::intValue).sum();
 
@@ -132,7 +140,7 @@ public class RewardService {
                 .customerName(customer.getName())
                 .monthlyPoints(formattedMonthlyPoints)
                 .totalPoints(totalPoints)
-                .transactions(transactions)
+                .transactions(immutableTransactions)
                 .build();
     }
 }

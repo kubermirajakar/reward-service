@@ -1,4 +1,4 @@
-package com.kubertech.rewardsystem;
+package com.kubertech.rewardsystem.service;
 
 import com.kubertech.rewardsystem.exception.ResourceNotFoundException;
 import com.kubertech.rewardsystem.model.Customer;

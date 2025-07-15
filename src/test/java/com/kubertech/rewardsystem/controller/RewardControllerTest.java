@@ -1,4 +1,4 @@
-package com.kubertech.rewardsystem;
+package com.kubertech.rewardsystem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kubertech.rewardsystem.controller.RewardController;

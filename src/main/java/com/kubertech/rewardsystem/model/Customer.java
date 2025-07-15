@@ -1,5 +1,6 @@
 package com.kubertech.rewardsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -47,7 +48,8 @@ public class Customer {
      * - All related transactions are cascaded and removed if the customer is deleted.
      * - {@link JsonManagedReference} is used for correct bidirectional serialization.
      */
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true , fetch = FetchType.LAZY)
     @JsonManagedReference
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Transaction> transactions;
 }

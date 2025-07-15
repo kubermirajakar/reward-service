@@ -50,7 +50,7 @@ com.kubertech.rewardsystem
 
 ### 👤 Customer Endpoints
 
-#### 3. Create a Customer
+#### 1. Create a Customer
 - `POST /api/rewards/customers`
 
 **Request:**
@@ -63,9 +63,8 @@ com.kubertech.rewardsystem
 **Response:**
 ```json
 {
-  "id": 3,
-  "name": "Khot",
-  "transactions": null
+  "id": 1,
+  "name": "Alice"
 }
 ```
 
@@ -73,7 +72,7 @@ com.kubertech.rewardsystem
 
 ### 💸 Transaction Endpoints
 
-#### 8. Create Transaction
+#### 2. Create Transaction
 - `POST /api/rewards/transactions`
 
 **Request:**
@@ -100,7 +99,7 @@ com.kubertech.rewardsystem
 
 ### 🧾 Reward Summary Endpoints
 
-#### 1. Fetch All Customer Reward Summaries
+#### 3. Fetch All Customer Reward Summaries
 - `GET /api/rewards`
 
 **Response:**
@@ -111,9 +110,9 @@ com.kubertech.rewardsystem
     "customerName": "Krishna",
     "transactions": [
       {
-        "id": 1,
-        "amount": 132.0,
-        "transactionDate": "2024-06-25"
+        "id": 3,
+        "amount": 90.0,
+        "transactionDate": "2024-04-25"
       },
       {
         "id": 2,
@@ -121,9 +120,9 @@ com.kubertech.rewardsystem
         "transactionDate": "2024-05-25"
       },
       {
-        "id": 3,
-        "amount": 90.0,
-        "transactionDate": "2024-04-25"
+        "id": 1,
+        "amount": 132.0,
+        "transactionDate": "2024-06-25"
       }
     ],
     "monthlyPoints": [
@@ -134,13 +133,13 @@ com.kubertech.rewardsystem
       },
       {
         "year": 2024,
-        "month": "June",
-        "points": 114
+        "month": "May",
+        "points": 150
       },
       {
         "year": 2024,
-        "month": "May",
-        "points": 150
+        "month": "June",
+        "points": 114
       }
     ],
     "totalPoints": 304
@@ -226,7 +225,7 @@ com.kubertech.rewardsystem
 ]
 ```
 
-#### 2. Fetch Reward Summary for a Specific Customer in a Date Range
+#### 4. Fetch Reward Summary for a Specific Customer in a Date Range
 - `GET /api/rewards/{customerId}?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`
 
 **Response:**
@@ -236,9 +235,9 @@ com.kubertech.rewardsystem
   "customerName": "Krishna",
   "transactions": [
     {
-      "id": 1,
-      "amount": 132.0,
-      "transactionDate": "2024-06-25"
+      "id": 3,
+      "amount": 90.0,
+      "transactionDate": "2024-04-25"
     },
     {
       "id": 2,
@@ -246,9 +245,9 @@ com.kubertech.rewardsystem
       "transactionDate": "2024-05-25"
     },
     {
-      "id": 3,
-      "amount": 90.0,
-      "transactionDate": "2024-04-25"
+      "id": 1,
+      "amount": 132.0,
+      "transactionDate": "2024-06-25"
     }
   ],
   "monthlyPoints": [
@@ -259,13 +258,13 @@ com.kubertech.rewardsystem
     },
     {
       "year": 2024,
-      "month": "June",
-      "points": 114
+      "month": "May",
+      "points": 150
     },
     {
       "year": 2024,
-      "month": "May",
-      "points": 150
+      "month": "June",
+      "points": 114
     }
   ],
   "totalPoints": 304

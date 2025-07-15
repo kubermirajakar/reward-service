@@ -1,94 +1,85 @@
 package com.kubertech.rewardsystem.controller;
 
 import com.kubertech.rewardsystem.model.Customer;
-import com.kubertech.rewardsystem.model.CustomerBasicDTO;
 import com.kubertech.rewardsystem.model.RewardSummary;
 import com.kubertech.rewardsystem.model.Transaction;
-import com.kubertech.rewardsystem.service.RewardCalculationService;
+import com.kubertech.rewardsystem.service.RewardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * REST controller for handling reward-related operations.
+ * <p>
+ * This controller provides endpoints for managing customers, transactions,
+ * and fetching reward summaries using standard HTTP methods.
+ */
 @RestController
 @RequestMapping("/api/rewards")
 @Slf4j
 @RequiredArgsConstructor
 public class RewardController {
 
-    private final RewardCalculationService rewardCalculationService;
+    /** The service layer for handling reward logic. */
+    private final RewardService rewardService;
 
+    /**
+     * Creates a new customer.
+     *
+     * @param customer the {@link Customer} object to create, validated before processing
+     * @return {@link ResponseEntity} containing the saved customer and HTTP 201 status
+     */
+    @PostMapping("/customers")
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+        Customer savedCustomer = rewardService.createCustomer(customer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer);
+    }
+
+    /**
+     * Creates a new transaction associated with a customer.
+     *
+     * @param transaction the {@link Transaction} object to create, validated before processing
+     * @return {@link ResponseEntity} containing the saved transaction and HTTP 201 status
+     */
+    @PostMapping("/transactions")
+    public ResponseEntity<Transaction> createTransaction(@Valid @RequestBody Transaction transaction) {
+        Transaction savedTransaction = rewardService.createTransaction(transaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+    }
+
+    /**
+     * Retrieves reward summaries for all customers.
+     *
+     * @return {@link ResponseEntity} with a list of {@link RewardSummary} for all customers
+     */
     @GetMapping
     public ResponseEntity<List<RewardSummary>> fetchAllRewardsSummary() {
         log.info("API called: fetchAllRewardsSummary");
-        return ResponseEntity.ok(rewardCalculationService.getAllRewardSummaries());
+        return ResponseEntity.ok(rewardService.getAllRewardSummaries());
     }
 
+    /**
+     * Retrieves the reward summary for a specific customer within a date range.
+     *
+     * @param customerId the ID of the customer
+     * @param startDate  the start date of the reward calculation range (ISO format)
+     * @param endDate    the end date of the reward calculation range (ISO format)
+     * @return {@link ResponseEntity} containing the {@link RewardSummary} for the given customer
+     */
     @GetMapping("/{customerId}")
-    public ResponseEntity<RewardSummary> fetchCustomerRewards(
-            @PathVariable String customerId,
-            @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        log.info("API called: fetchCustomerRewards for {}", customerId);
-        return ResponseEntity.ok(rewardCalculationService.getCustomerRewards(customerId, startDate, endDate));
-    }
-
-    // CRUD - Customers
-    @PostMapping("/customers")
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
-        return ResponseEntity.ok(rewardCalculationService.createCustomer(customer));
-    }
-
-    @GetMapping("/customers")
-    public ResponseEntity<List<CustomerBasicDTO>> getAllCustomers() {
-        return ResponseEntity.ok(rewardCalculationService.getAllCustomers());
-    }
-
-    @GetMapping("/customers/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable String id) {
-        return ResponseEntity.ok(rewardCalculationService.getCustomerById(id));
-    }
-
-    @PutMapping("/customers/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable String id, @Valid @RequestBody Customer customer) {
-        return ResponseEntity.ok(rewardCalculationService.updateCustomer(id, customer));
-    }
-
-    @DeleteMapping("/customers/{id}")
-    public ResponseEntity<String> deleteCustomer(@PathVariable String id) {
-        rewardCalculationService.deleteCustomer(id);
-        return ResponseEntity.ok("Customer has been deleted successfully");
-    }
-
-    @PostMapping("/transactions")
-    public ResponseEntity<Transaction> createTransaction(@Valid @RequestBody Transaction transaction) {
-        return ResponseEntity.ok(rewardCalculationService.createTransaction(transaction));
-    }
-
-    @GetMapping("/transactions")
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
-        return ResponseEntity.ok(rewardCalculationService.getAllTransactions());
-    }
-
-    @GetMapping("/transactions/{id}")
-    public ResponseEntity<Transaction> getTransactionById(@PathVariable String id) {
-        return ResponseEntity.ok(rewardCalculationService.getTransactionById(id));
-    }
-
-    @PutMapping("/transactions/{id}")
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable String id, @Valid @RequestBody Transaction transaction) {
-        return ResponseEntity.ok(rewardCalculationService.updateTransaction(id, transaction));
-    }
-
-    @DeleteMapping("/transactions/{id}")
-    public ResponseEntity<String> deleteTransaction(@PathVariable String id) {
-        rewardCalculationService.deleteTransaction(id);
-        return ResponseEntity.ok("Transaction has been deleted successfully");
+    public ResponseEntity<RewardSummary> getCustomerRewardSummary(
+            @PathVariable Long customerId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        log.info("Retrieves a detailed reward summary for a given customer based on transactions within the specified date range");
+        RewardSummary summary = rewardService.getCustomerRewards(customerId, startDate, endDate);
+        return ResponseEntity.ok(summary);
     }
 }

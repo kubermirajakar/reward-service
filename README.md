@@ -1,6 +1,6 @@
 # 🏆 Reward System API
 
-A Spring Boot application that calculates customer reward points based on transaction history. It aggregates monthly and total points, with full CRUD operations for customers and transactions.
+A Spring Boot application that calculates customer reward points based on transaction history. It aggregates monthly and total points, with full write operations for customers and transactions.
 
 ---
 
@@ -8,7 +8,7 @@ A Spring Boot application that calculates customer reward points based on transa
 
 - Calculate reward points based on business rules
 - Retrieve reward summaries for all customers or per customer with date filters
-- Create, read, update, and delete customers & transactions
+- Create customers & transactions
 - Logs API calls for traceability
 - Modular and scalable design using Spring Boot
 
@@ -34,66 +34,19 @@ A Spring Boot application that calculates customer reward points based on transa
 
 ```
 com.kubertech.rewardsystem
+
+├── config/                 # Security config (if any)
 ├── controller/             # REST endpoints
-├── service/                # Business logic
-├── model/                  # Domain models (Customer, Transaction, RewardSummary)
+├── exception/              # Golbal Exceptions
+├── model/                  # Domain models (Customer, Transaction, RewardSummary , CustomerBasicDTO , MonthlyPointDTO)
 ├── repository/             # Database access layer
-└── config/                 # Security config (if any)
+├── service/                # Business logic
+└── utility/                # Reward Points utility
 ```
 
 ---
 
 ## 🔄 API Endpoints
-
-### 🧾 Reward Summary Endpoints
-
-#### 1. Fetch All Customer Reward Summaries
-- `GET /api/rewards`
-
-**Response:**
-```json
-[
-  {
-    "customerId": "1",
-    "customerName": "Alice",
-    "monthlyPoints": {
-      "2025-07": 120
-    },
-    "totalPoints": 120,
-    "transactions": [
-      {
-        "id": 1001,
-        "amount": 100.0,
-        "transactionDate": "2025-07-10"
-      }
-    ]
-  }
-]
-```
-
-#### 2. Fetch Reward Summary for a Specific Customer in a Date Range
-- `GET /api/rewards/{customerId}?start=YYYY-MM-DD&end=YYYY-MM-DD`
-
-**Response:**
-```json
-{
-  "customerId": "1",
-  "customerName": "Alice",
-  "monthlyPoints": {
-    "2025-06": 90
-  },
-  "totalPoints": 90,
-  "transactions": [
-    {
-      "id": 1002,
-      "amount": 90.0,
-      "transactionDate": "2025-06-15"
-    }
-  ]
-}
-```
-
----
 
 ### 👤 Customer Endpoints
 
@@ -103,7 +56,6 @@ com.kubertech.rewardsystem
 **Request:**
 ```json
 {
-  "id": "1",
   "name": "Alice"
 }
 ```
@@ -111,60 +63,10 @@ com.kubertech.rewardsystem
 **Response:**
 ```json
 {
-  "id": "1",
-  "name": "Alice"
+  "id": 3,
+  "name": "Khot",
+  "transactions": null
 }
-```
-
-#### 4. Fetch All Customers
-- `GET /api/rewards/customers`
-
-**Response:**
-```json
-[
-  {
-    "id": "1",
-    "name": "Alice"
-  }
-]
-```
-
-#### 5. Fetch Customer by ID
-- `GET /api/rewards/customers/{id}`
-
-**Response:**
-```json
-{
-  "id": "1",
-  "name": "Alice"
-}
-```
-
-#### 6. Update Customer
-- `PUT /api/rewards/customers/{id}`
-
-**Request:**
-```json
-{
-  "id": "1",
-  "name": "Alice Updated"
-}
-```
-
-**Response:**
-```json
-{
-  "id": "1",
-  "name": "Alice Updated"
-}
-```
-
-#### 7. Delete Customer
-- `DELETE /api/rewards/customers/{id}`
-
-**Response:**
-```json
-"Customer has been successfully deleted."
 ```
 
 ---
@@ -194,67 +96,203 @@ com.kubertech.rewardsystem
 }
 ```
 
-#### 9. Fetch All Transactions
-- `GET /api/rewards/transactions`
+---
+
+### 🧾 Reward Summary Endpoints
+
+#### 1. Fetch All Customer Reward Summaries
+- `GET /api/rewards`
 
 **Response:**
 ```json
 [
   {
-    "id": 1001,
-    "amount": 120.0,
-    "transactionDate": "2025-07-10"
+    "customerId": 1,
+    "customerName": "Krishna",
+    "transactions": [
+      {
+        "id": 1,
+        "amount": 132.0,
+        "transactionDate": "2024-06-25"
+      },
+      {
+        "id": 2,
+        "amount": 150.0,
+        "transactionDate": "2024-05-25"
+      },
+      {
+        "id": 3,
+        "amount": 90.0,
+        "transactionDate": "2024-04-25"
+      }
+    ],
+    "monthlyPoints": [
+      {
+        "year": 2024,
+        "month": "April",
+        "points": 40
+      },
+      {
+        "year": 2024,
+        "month": "June",
+        "points": 114
+      },
+      {
+        "year": 2024,
+        "month": "May",
+        "points": 150
+      }
+    ],
+    "totalPoints": 304
+  },
+  {
+    "customerId": 2,
+    "customerName": "Kuber",
+    "transactions": [
+      {
+        "id": 4,
+        "amount": 80.0,
+        "transactionDate": "2024-04-25"
+      },
+      {
+        "id": 5,
+        "amount": 90.0,
+        "transactionDate": "2024-05-25"
+      },
+      {
+        "id": 6,
+        "amount": 100.0,
+        "transactionDate": "2024-06-25"
+      }
+    ],
+    "monthlyPoints": [
+      {
+        "year": 2024,
+        "month": "April",
+        "points": 30
+      },
+      {
+        "year": 2024,
+        "month": "May",
+        "points": 40
+      },
+      {
+        "year": 2024,
+        "month": "June",
+        "points": 50
+      }
+    ],
+    "totalPoints": 120
+  },
+  {
+    "customerId": 3,
+    "customerName": "khot",
+    "transactions": [
+      {
+        "id": 7,
+        "amount": 50.0,
+        "transactionDate": "2024-04-25"
+      },
+      {
+        "id": 8,
+        "amount": 60.0,
+        "transactionDate": "2024-05-25"
+      },
+      {
+        "id": 9,
+        "amount": 70.0,
+        "transactionDate": "2024-06-25"
+      }
+    ],
+    "monthlyPoints": [
+      {
+        "year": 2024,
+        "month": "April",
+        "points": 0
+      },
+      {
+        "year": 2024,
+        "month": "May",
+        "points": 10
+      },
+      {
+        "year": 2024,
+        "month": "June",
+        "points": 20
+      }
+    ],
+    "totalPoints": 30
   }
 ]
 ```
 
-#### 10. Fetch Transaction by ID
-- `GET /api/rewards/transactions/{id}`
+#### 2. Fetch Reward Summary for a Specific Customer in a Date Range
+- `GET /api/rewards/{customerId}?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`
 
 **Response:**
 ```json
 {
-  "id": 1001,
-  "amount": 120.0,
-  "transactionDate": "2025-07-10"
+  "customerId": 1,
+  "customerName": "Krishna",
+  "transactions": [
+    {
+      "id": 1,
+      "amount": 132.0,
+      "transactionDate": "2024-06-25"
+    },
+    {
+      "id": 2,
+      "amount": 150.0,
+      "transactionDate": "2024-05-25"
+    },
+    {
+      "id": 3,
+      "amount": 90.0,
+      "transactionDate": "2024-04-25"
+    }
+  ],
+  "monthlyPoints": [
+    {
+      "year": 2024,
+      "month": "April",
+      "points": 40
+    },
+    {
+      "year": 2024,
+      "month": "June",
+      "points": 114
+    },
+    {
+      "year": 2024,
+      "month": "May",
+      "points": 150
+    }
+  ],
+  "totalPoints": 304
 }
-```
-
-#### 11. Update Transaction
-- `PUT /api/rewards/transactions/{id}`
-
-**Request:**
-```json
-{
-  "id": 1001,
-  "amount": 150.0,
-  "transactionDate": "2025-07-11",
-  "customer": {
-    "id": "1"
-  }
-}
-```
-
-**Response:**
-```json
-{
-  "id": 1001,
-  "amount": 150.0,
-  "transactionDate": "2025-07-11"
-}
-```
-
-#### 12. Delete Transaction
-- `DELETE /api/rewards/transactions/{id}`
-
-**Response:**
-```json
-"Transaction has been deleted successfully."
 ```
 
 ---
 
+
+
 ## ▶️ Run the App
+
+## 🚀 Getting Started
+
+###  Clone the Repository
+
+```bash
+git clone https://github.com/kubermirajakar/reward-service.git
+cd kubermirajakar
+```
+
+###  Build the Project
+```bash
+mvn clean install
+```
+
+###  Run the Application
 
 ```bash
 mvn spring-boot:run
